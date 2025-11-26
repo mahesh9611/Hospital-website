@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hospital Availability Dashboard</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: #f5f5f5;
+    }
+
+    h1 {
+        margin-bottom: 10px;
+    }
+
+    input, button, textarea {
+        padding: 8px;
+        margin: 5px 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    button {
+        cursor: pointer;
+    }
+
+    .btn-small {
+        padding: 6px 12px;
+        font-size: 14px;
+        margin-right: 5px;
+    }
+
+    .hospital-table {
+        width: 100%;
+        background: white;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .hospital-table th, .hospital-table td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        vertical-align: top;
+    }
+
+    .actions button {
+        margin-bottom: 5px;
+    }
+
+    /* ICON BUTTONS */
+    .icon-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        margin-right: 5px;
+    }
+
+    .icon {
+        width: 22px;
+        height: 22px;
+        vertical-align: middle;
+    }
+
+    .search-box {
+        width: 40%;
+        padding: 10px;
+    }
+
+    .form-container {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+    }
+</style>
+</head>
+<body>
+
+<h1>Hospital Availability</h1>
+
+<input id="search" class="search-box" placeholder="Search hospital or area...">
+
+<div class="form-container">
+    <h3>Add / Edit Hospital</h3>
+
+    <label>Hospital Name</label>
+    <input id="name">
+
+    <label>Phone</label>
+    <input id="phone">
+
+    <label>Address</label>
+    <input id="address">
+
+    <label>Available General Beds</label>
+    <input id="beds" type="number">
+
+    <label>Available ICU Beds</label>
+    <input id="icu" type="number">
+
+    <label>Oxygen Available (LPM)</label>
+    <input id="oxygen" type="number">
+
+    <label>Notes</label>
+    <textarea id="notes"></textarea>
+
+    <button id="saveBtn" class="btn-small">Save Hospital</button>
+    <button id="clearBtn" class="btn-small">Clear</button>
+</div>
+
+<h2>Hospitals</h2>
+
+<table class="hospital-table">
+    <thead>
+        <tr>
+            <th>Hospital</th>
+            <th>Phone / Address</th>
+            <th>Beds / ICU</th>
+            <th>Oxygen</th>
+            <th>Updated</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="hospitalList"></tbody>
+</table>
+
+<!-- ICONS (CALL, SMS, LOCATION, ALERT) -->
+<svg style="display:none;">
+    <!-- Phone -->
+    <symbol id="phoneIcon" viewBox="0 0 24 24">
+        <path d="M6.6,10.8c1.2,2.3,3,4.1,5.3,5.3l1.8-1.8c0.2-0.2,0.5-0.3,0.8-0.2
+        c0.9,0.3,1.9,0.5,2.9,0.5c0.4,0,0.8,0.3,0.8,0.8v2.9c0,0.4-0.3,0.8-0.8,0.8
+        c-9.1,0-16.5-7.4-16.5-16.5C1,2.3,1.3,2,1.8,2h2.9c0.4,0,0.8,0.3,0.8,0.8
+        c0,1,0.2,2,0.5,2.9C6,6,6,6.4,5.8,6.6L4,8.4C4.3,9.1,5.3,10.6,6.6,10.8z"/>
+    </symbol>
+
+    <!-- SMS -->
+    <symbol id="smsIcon" viewBox="0 0 24 24">
+        <path d="M4 4h16v12H5.17L4 17.17V4zm0-2c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 
+        2-2V4c0-1.1-.9-2-2-2H4z"/>
+    </symbol>
+
+    <!-- Location -->
+    <symbol id="locationIcon" viewBox="0 0 24 24">
+        <path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 
+        7-13c0-3.9-3.1-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 
+        6.5 12 6.5s2.5 1.1 2.5 2.5S13.4 11.5 12 11.5z"/>
+    </symbol>
+
+    <!-- Alert -->
+    <symbol id="alertIcon" viewBox="0 0 24 24">
+        <path d="M1 21h22L12 2 1 21zm12-3h-2v2h2v-2zm0-8h-2v6h2v-6z"/>
+    </symbol>
+</svg>
+
+<!-- PART 2 SCRIPT COMES BELOW -->
+
+<script>
+// ---------------------
+// INITIAL DATA (10 Hospitals)
+// ---------------------
+let hospitals = JSON.parse(localStorage.getItem("hospitals") || "[]");
+
+if (hospitals.length === 0) {
+    hospitals = [
+        {
+            id: Date.now()+1,
+            name: "Malemalleshwar Hospital Bellubbi",
+            phone: "6362642127",
+            address: "Near Maleswami Temple",
+            beds: 10, icu: 2, oxygen: 5,
+            notes: "Contact receptionist",
+            updated: "2025-11-24 22:00"
+        },
+        {
+            id: Date.now()+2,
+            name: "Vijay Hospital Hubli",
+            phone: "8312456789",
+            address: "Gokul Road",
+            beds: 15, icu: 3, oxygen: 10,
+            notes: "",
+            updated: "2025-11-22 18:30"
+        },
+        {
+            id: Date.now()+3,
+            name: "KIMS Hospital Hubli",
+            phone: "0836-2371000",
+            address: "Vidyangar",
+            beds: 25, icu: 6, oxygen: 12,
+            notes: "",
+            updated: "2025-11-23 17:20"
+        },
+        {
+            id: Date.now()+4,
+            name: "SDM Hospital Dharwad",
+            phone: "0836-2447755",
+            address: "Sattur",
+            beds: 18, icu: 4, oxygen: 8,
+            notes: "",
+            updated: "2025-11-24 10:00"
+        },
+        {
+            id: Date.now()+5,
+            name: "City Care Hospital Gadag",
+            phone: "9845123456",
+            address: "Railway Station Road",
+            beds: 8, icu: 1, oxygen: 4,
+            notes: "",
+            updated: "2025-11-23 14:45"
+        },
+        {
+            id: Date.now()+6,
+            name: "Government Hospital Saundatti",
+            phone: "7896541230",
+            address: "Near Bus Stand",
+            beds: 12, icu: 2, oxygen: 6,
+            notes: "",
+            updated: "2025-11-24 09:00"
+        },
+        {
+            id: Date.now()+7,
+            name: "Navjeevan Hospital Belagavi",
+            phone: "0831-2406000",
+            address: "Tilakwadi",
+            beds: 20, icu: 5, oxygen: 10,
+            notes: "",
+            updated: "2025-11-22 15:30"
+        },
+        {
+            id: Date.now()+8,
+            name: "Shri Ram Hospital Hubli",
+            phone: "9887766554",
+            address: "Old Hubli",
+            beds: 9, icu: 2, oxygen: 7,
+            notes: "",
+            updated: "2025-11-21 16:10"
+        },
+        {
+            id: Date.now()+9,
+            name: "Ashwini Hospital Dharwad",
+            phone: "9345678123",
+            address: "Jubilee Circle",
+            beds: 14, icu: 3, oxygen: 9,
+            notes: "",
+            updated: "2025-11-23 11:45"
+        },
+        {
+            id: Date.now()+10,
+            name: "Global Hospital Hubli",
+            phone: "9108877665",
+            address: "Navanagar",
+            beds: 22, icu: 4, oxygen: 11,
+            notes: "",
+            updated: "2025-11-24 12:20"
+        }
+    ];
+    localStorage.setItem("hospitals", JSON.stringify(hospitals));
+}
+
+
+
+// ---------------------
+// RENDER TABLE
+// ---------------------
+function renderHospitals(list = hospitals) {
+    const tbody = document.getElementById("hospitalList");
+    tbody.innerHTML = "";
+
+    list.forEach(h => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td><b>${h.name}</b></td>
+
+            <td>
+                ${h.phone}<br>${h.address}
+                <br>
+                <button class="icon-btn" onclick="callHospital('${h.phone}')">
+                    <svg class="icon"><use href="#phoneIcon"></use></svg>
+                </button>
+                <button class="icon-btn" onclick="smsHospital('${h.phone}')">
+                    <svg class="icon"><use href="#smsIcon"></use></svg>
+                </button>
+                <button class="icon-btn" onclick="openLocation('${h.address}')">
+                    <svg class="icon"><use href="#locationIcon"></use></svg>
+                </button>
+                <button class="icon-btn" onclick="alertInfo('${h.name}')">
+                    <svg class="icon"><use href="#alertIcon"></use></svg>
+                </button>
+            </td>
+
+            <td>${h.beds} / ${h.icu}</td>
+            <td>${h.oxygen} LPM</td>
+            <td>${h.updated}</td>
+
+            <td class="actions">
+                <button class="btn-small" onclick="editHospital('${h.id}')">Edit</button>
+                <button class="btn-small" onclick="deleteHospital('${h.id}')">Delete</button>
+            </td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+renderHospitals();
+
+
+// ----------------------
+// ICON BUTTON FUNCTIONS
+// ----------------------
+function callHospital(num) {
+    window.location.href = `tel:${num}`;
+}
+
+function smsHospital(num) {
+    window.location.href = `sms:${num}`;
+}
+
+function openLocation(addr) {
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`);
+}
+
+function alertInfo(name) {
+    alert("Emergency Alert for: " + name);
+}
+
+
+
+// ----------------------
+// ADD / EDIT / SAVE
+// ----------------------
+let editId = null;
+
+document.getElementById("saveBtn").onclick = function () {
+    const data = {
+        name: name.value,
+        phone: phone.value,
+        address: address.value,
+        beds: beds.value,
+        icu: icu.value,
+        oxygen: oxygen.value,
+        notes: notes.value,
+        updated: new Date().toISOString().slice(0, 16).replace("T", " ")
+    };
+
+    if (editId) {
+        const i = hospitals.findIndex(h => h.id === editId);
+        hospitals[i] = { ...hospitals[i], ...data };
+        editId = null;
+    } else {
+        data.id = Date.now().toString();
+        hospitals.push(data);
+    }
+
+    localStorage.setItem("hospitals", JSON.stringify(hospitals));
+    renderHospitals();
+    clearForm();
+};
+
+function editHospital(id) {
+    const h = hospitals.find(x => x.id == id);
+    editId = id;
+
+    name.value = h.name;
+    phone.value = h.phone;
+    address.value = h.address;
+    beds.value = h.beds;
+    icu.value = h.icu;
+    oxygen.value = h.oxygen;
+    notes.value = h.notes;
+}
+
+function deleteHospital(id) {
+    hospitals = hospitals.filter(h => h.id != id);
+    localStorage.setItem("hospitals", JSON.stringify(hospitals));
+    renderHospitals();
+}
+
+document.getElementById("clearBtn").onclick = clearForm;
+
+function clearForm() {
+    name.value = "";
+    phone.value = "";
+    address.value = "";
+    beds.value = "";
+    icu.value = "";
+    oxygen.value = "";
+    notes.value = "";
+    editId = null;
+}
+
+
+// ----------------------
+// SEARCH FILTER
+// ----------------------
+document.getElementById("search").addEventListener("input", function () {
+    const q = this.value.toLowerCase();
+    const filtered = hospitals.filter(h =>
+        h.name.toLowerCase().includes(q) ||
+        h.address.toLowerCase().includes(q)
+    );
+    renderHospitals(filtered);
+});
+</script>
+
+</body>
+</html>
+
