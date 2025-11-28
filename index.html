@@ -251,5 +251,19 @@ document.getElementById("saveBtn").onclick = () => {
 
     renderHospitals();
 };
+// ------------------------------------------
+// SEARCH FILTER
+// ------------------------------------------
+document.getElementById("search").addEventListener("input", function () {
+    const q = this.value.toLowerCase();
+
+    const filtered = hospitals.filter(h =>
+        h.name.toLowerCase().includes(q) ||
+        h.address.toLowerCase().includes(q)
+    );
+
+    renderHospitals(filtered);
+});
 
 </script>
+
