@@ -4,75 +4,17 @@
 <meta charset="UTF-8">
 <title>Hospital Availability Dashboard</title>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-        background: #f5f5f5;
-    }
-
-    h1 {
-        margin-bottom: 10px;
-    }
-
-    input, button, textarea {
-        padding: 8px;
-        margin: 5px 0;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    button {
-        cursor: pointer;
-    }
-
-    .btn-small {
-        padding: 6px 12px;
-        font-size: 14px;
-        margin-right: 5px;
-    }
-
-    .hospital-table {
-        width: 100%;
-        background: white;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-
-    .hospital-table th, .hospital-table td {
-        padding: 12px;
-        border: 1px solid #ddd;
-        vertical-align: top;
-    }
-
-    .actions button {
-        margin-bottom: 5px;
-    }
-
-    /* ICON BUTTONS */
-    .icon-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 5px;
-        margin-right: 5px;
-    }
-
-    .icon {
-        width: 22px;
-        height: 22px;
-        vertical-align: middle;
-    }
-
-    .search-box {
-        width: 40%;
-        padding: 10px;
-    }
-
-    .form-container {
-        background: white;
-        padding: 15px;
-        border-radius: 5px;
-    }
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+    h1 { margin-bottom: 10px; }
+    input, button, textarea { padding: 8px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+    button { cursor: pointer; }
+    .btn-small { padding: 6px 12px; font-size: 14px; margin-right: 5px; }
+    .hospital-table { width: 100%; background: white; border-collapse: collapse; margin-top: 20px; }
+    .hospital-table th, .hospital-table td { padding: 12px; border: 1px solid #ddd; vertical-align: top; }
+    .icon-btn { background: none; border: none; cursor: pointer; padding: 5px; margin-right: 5px; }
+    .icon { width: 22px; height: 22px; vertical-align: middle; }
+    .search-box { width: 40%; padding: 10px; }
+    .form-container { background: white; padding: 15px; border-radius: 5px; }
 </style>
 </head>
 <body>
@@ -86,22 +28,18 @@
 
     <label>Hospital Name</label>
     <input id="name">
-
     <label>Phone</label>
     <input id="phone">
-
     <label>Address</label>
     <input id="address">
-
     <label>Available General Beds</label>
     <input id="beds" type="number">
-
     <label>Available ICU Beds</label>
     <input id="icu" type="number">
-
     <label>Oxygen Available (LPM)</label>
     <input id="oxygen" type="number">
-
+    <label>Blood Available (Unit)</label>
+    <input id="blood" type="number">
     <label>Notes</label>
     <textarea id="notes"></textarea>
 
@@ -118,6 +56,7 @@
             <th>Phone / Address</th>
             <th>Beds / ICU</th>
             <th>Oxygen</th>
+            <th>Blood</th>
             <th>Updated</th>
             <th>Actions</th>
         </tr>
@@ -125,286 +64,192 @@
     <tbody id="hospitalList"></tbody>
 </table>
 
-<!-- ICONS (CALL, SMS, LOCATION, ALERT) -->
 <svg style="display:none;">
-    <!-- Phone -->
-    <symbol id="phoneIcon" viewBox="0 0 24 24">
-        <path d="M6.6,10.8c1.2,2.3,3,4.1,5.3,5.3l1.8-1.8c0.2-0.2,0.5-0.3,0.8-0.2
-        c0.9,0.3,1.9,0.5,2.9,0.5c0.4,0,0.8,0.3,0.8,0.8v2.9c0,0.4-0.3,0.8-0.8,0.8
-        c-9.1,0-16.5-7.4-16.5-16.5C1,2.3,1.3,2,1.8,2h2.9c0.4,0,0.8,0.3,0.8,0.8
-        c0,1,0.2,2,0.5,2.9C6,6,6,6.4,5.8,6.6L4,8.4C4.3,9.1,5.3,10.6,6.6,10.8z"/>
-    </symbol>
-
-    <!-- SMS -->
-    <symbol id="smsIcon" viewBox="0 0 24 24">
-        <path d="M4 4h16v12H5.17L4 17.17V4zm0-2c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 
-        2-2V4c0-1.1-.9-2-2-2H4z"/>
-    </symbol>
-
-    <!-- Location -->
-    <symbol id="locationIcon" viewBox="0 0 24 24">
-        <path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 
-        7-13c0-3.9-3.1-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 
-        6.5 12 6.5s2.5 1.1 2.5 2.5S13.4 11.5 12 11.5z"/>
-    </symbol>
-
-    <!-- Alert -->
-    <symbol id="alertIcon" viewBox="0 0 24 24">
-        <path d="M1 21h22L12 2 1 21zm12-3h-2v2h2v-2zm0-8h-2v6h2v-6z"/>
-    </symbol>
+    <symbol id="phoneIcon" viewBox="0 0 24 24"><path d="M6.6,10.8c1.2,2.3,3,4.1,5.3,5.3l1.8-1.8c0.2-0.2,0.5-0.3,0.8-0.2c0.9,0.3,1.9,0.5,2.9,0.5c0.4,0,0.8,0.3,0.8,0.8v2.9c0,0.4-0.3,0.8-0.8,0.8c-9.1,0-16.5-7.4-16.5-16.5C1,2.3,1.3,2,1.8,2h2.9c0.4,0,0.8,0.3,0.8,0.8c0,1,0.2,2,0.5,2.9C6,6,6,6.4,5.8,6.6L4,8.4C4.3,9.1,5.3,10.6,6.6,10.8z"/></symbol>
+    <symbol id="smsIcon" viewBox="0 0 24 24"><path d="M4 4h16v12H5.17L4 17.17V4zm0-2c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2H4z"/></symbol>
+    <symbol id="locationIcon" viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5S13.4 11.5 12 11.5z"/></symbol>
+    <symbol id="alertIcon" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v2h2v-2zm0-8h-2v6h2v-6z"/></symbol>
+    <symbol id="ambulanceIcon" viewBox="0 0 24 24"><path d="M19 8h-1V6c0-1.1-.9-2-2-2H8C6.9 4 6 4.9 6 6v2H5c-1.1 0-2 .9-2 2v9c0 1.1.9 2 2 2h1c0 1.1.9 2 2 2s2-.9 2-2h6c0 1.1.9 2 2 2s2-.9 2-2h1c1.1 0 2-.9 2-2v-9c0-1.1-.9-2-2-2zM8 6h8v2H8V6zm9 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-10 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm0-6v-3h10v3H7z"/></symbol>
 </svg>
 
-<!-- PART 2 SCRIPT COMES BELOW -->
-
 <script>
-// ---------------------
-// INITIAL DATA (10 Hospitals)
-// ---------------------
-let hospitals = JSON.parse(localStorage.getItem("hospitals") || "[]");
 
-if (hospitals.length === 0) {
-    hospitals = [
-        {
-            id: Date.now()+1,
-            name: "Malemalleshwar Hospital Bellubbi",
-            phone: "6362642127",
-            address: "Near Maleswami Temple",
-            beds: 10, icu: 2, oxygen: 5,
-            notes: "Contact receptionist",
-            updated: "2025-11-24 22:00"
-        },
-        {
-            id: Date.now()+2,
-            name: "Vijay Hospital Hubli",
-            phone: "8312456789",
-            address: "Gokul Road",
-            beds: 15, icu: 3, oxygen: 10,
-            notes: "",
-            updated: "2025-11-22 18:30"
-        },
-        {
-            id: Date.now()+3,
-            name: "KIMS Hospital Hubli",
-            phone: "0836-2371000",
-            address: "Vidyangar",
-            beds: 25, icu: 6, oxygen: 12,
-            notes: "",
-            updated: "2025-11-23 17:20"
-        },
-        {
-            id: Date.now()+4,
-            name: "SDM Hospital Dharwad",
-            phone: "0836-2447755",
-            address: "Sattur",
-            beds: 18, icu: 4, oxygen: 8,
-            notes: "",
-            updated: "2025-11-24 10:00"
-        },
-        {
-            id: Date.now()+5,
-            name: "City Care Hospital Gadag",
-            phone: "9845123456",
-            address: "Railway Station Road",
-            beds: 8, icu: 1, oxygen: 4,
-            notes: "",
-            updated: "2025-11-23 14:45"
-        },
-        {
-            id: Date.now()+6,
-            name: "Government Hospital Saundatti",
-            phone: "7896541230",
-            address: "Near Bus Stand",
-            beds: 12, icu: 2, oxygen: 6,
-            notes: "",
-            updated: "2025-11-24 09:00"
-        },
-        {
-            id: Date.now()+7,
-            name: "Navjeevan Hospital Belagavi",
-            phone: "0831-2406000",
-            address: "Tilakwadi",
-            beds: 20, icu: 5, oxygen: 10,
-            notes: "",
-            updated: "2025-11-22 15:30"
-        },
-        {
-            id: Date.now()+8,
-            name: "Shri Ram Hospital Hubli",
-            phone: "9887766554",
-            address: "Old Hubli",
-            beds: 9, icu: 2, oxygen: 7,
-            notes: "",
-            updated: "2025-11-21 16:10"
-        },
-        {
-            id: Date.now()+9,
-            name: "Ashwini Hospital Dharwad",
-            phone: "9345678123",
-            address: "Jubilee Circle",
-            beds: 14, icu: 3, oxygen: 9,
-            notes: "",
-            updated: "2025-11-23 11:45"
-        },
-        {
-            id: Date.now()+10,
-            name: "Global Hospital Hubli",
-            phone: "9108877665",
-            address: "Navanagar",
-            beds: 22, icu: 4, oxygen: 11,
-            notes: "",
-            updated: "2025-11-24 12:20"
-        }
-    ];
-    localStorage.setItem("hospitals", JSON.stringify(hospitals));
-}
+// ------------------------------------------
+// FLEXIBLE MODE – ALWAYS LOAD FROM CODE
+// NO LOCALSTORAGE – ALWAYS SHOW ALL HOSPITALS
+// ------------------------------------------
 
+let hospitals = [
+    { id: "1", name: "Malemalleshwar Hospital Bellubbi", phone: "6362642127", address: "Near Maleswami Temple", beds: 10, icu: 2, oxygen: 5, blood: 4, notes: "", updated: "2025-11-24 22:00" },
+    { id: "2", name: "Vijay Hospital Hubli", phone: "8312456789", address: "Gokul Road", beds: 15, icu: 3, oxygen: 10, blood: 3, notes: "", updated: "2025-11-22 18:30" },
+    { id: 3, name: "Unity Hospital Vijayapur", phone: "9876543210", address: "Indi Road", beds: 15, icu: 2, oxygen: 8, blood: 5, notes:"", updated:"2025-11-23 18:00" },
+    { id: 4, name: "Apex Hospital Vijayapur", phone: "7411598765", address: "Basaveshwar Circle", beds: 18, icu: 3, oxygen: 9, blood: 5, notes:"", updated:"2025-11-23 12:00" },
+    { id: 5, name: "Adarsh Hospital Vijayapur", phone: "9745156780", address: "Shastri Nagar", beds: 12, icu: 1, oxygen: 6, blood: 5, notes:"", updated:"2025-11-22 16:00" },
+        { id: 6, name: "Global Hospital Vijayapur", phone: "8123456709", address: "Solapur Road", beds: 10, icu: 2, oxygen: 7, blood: 5, notes:"", updated:"2025-11-22 10:00" },
+        { id: 7, name: "City Hospital Vijayapur", phone: "7896541234", address: "Station Road", beds: 14, icu: 2, oxygen: 5, blood: 5, notes:"", updated:"2025-11-21 13:00" },
+        { id: 8, name: "Navjeevan Hospital Vijayapur", phone: "8974561200", address: "Gandhi Chowk", beds: 16, icu: 3, oxygen: 9, blood: 5, notes:"", updated:"2025-11-21 11:00" },
+        { id: 9, name: "Shifa Hospital Vijayapur", phone: "9945678123", address: "Market Road", beds: 10, icu: 1, oxygen: 6, blood: 5, notes:"", updated:"2025-11-20 09:30" },
+        { id: 10, name: "Sanjeevini Hospital Vijayapur", phone: "9001234567", address: "Gol Gumbaz Area", beds: 17, icu: 4, oxygen: 11, blood: 5, notes:"", updated:"2025-11-20 10:30" },
+        { id: 11, name: "Rajawadi Hospital Vijayapur", phone: "9834567890", address: "Ram Mandir Road", beds: 12, icu: 1, oxygen: 6, blood: 5, notes:"", updated:"2025-11-19 14:00" },
+        { id: 12, name: "Ashwini Hospital Vijayapur", phone: "8887654321", address: "Old PB Road", beds: 13, icu: 2, oxygen: 7, blood: 5, notes:"", updated:"2025-11-19 16:00" },
+        { id: 13, name: "Suraksha Hospital Vijayapur", phone: "8765432190", address: "Sainik School Road", beds: 14, icu: 2, oxygen: 8, blood: 5, notes:"", updated:"2025-11-18 12:00" },
+        { id: 14, name: "Bharat Hospital Vijayapur", phone: "7979123456", address: "Sindagi Road", beds: 11, icu: 1, oxygen: 5, blood: 5, notes:"", updated:"2025-11-18 09:00" },
+        { id: 15, name: "Kasturba Hospital Vijayapur", phone: "9823456789", address: "Ring Road", beds: 19, icu: 3, oxygen: 10, blood: 5, notes:"", updated:"2025-11-17 18:00" },
+        { id: 16, name: "Narayana Hospital Vijayapur", phone: "9012345678", address: "Talikoti Road", beds: 18, icu: 2, oxygen: 9, blood: 5, notes:"", updated:"2025-11-17 16:00" },
+        { id: 17, name: "Lotus Hospital Vijayapur", phone: "9898989898", address: "Indi Road", beds: 16, icu: 2, oxygen: 7, blood: 5, notes:"", updated:"2025-11-16 10:00" },
+        { id: 18, name: "Triveni Hospital Vijayapur", phone: "8989877654", address: "Tikota Road", beds: 11, icu: 1, oxygen: 5, blood: 5, notes:"", updated:"2025-11-16 11:00" },
+        { id: 19, name: "LifeCare Hospital Vijayapur", phone: "9123456780", address: "College Road", beds: 15, icu: 2, oxygen: 8, blood: 5, notes:"", updated:"2025-11-15 10:00" },
+        { id: 20, name: "Meenakshi Hospital Vijayapur", phone: "9876501234", address: "Ibrahimpur", beds: 13, icu: 2, oxygen: 6, blood: 5, notes:"", updated:"2025-11-15 12:00" },
 
+        // ------------- BAGALKOT (15 Hospitals) -------------
+        { id: 21, name: "District Hospital Bagalkot", phone: "08354-230111", address: "Navanagar", beds: 25, icu: 5, oxygen: 12, blood: 5, notes:"", updated:"2025-11-24 11:00" },
+        { id: 22, name: "BIMAS Hospital Bagalkot", phone: "08354-240221", address: "Vidyanagar", beds: 20, icu: 4, oxygen: 10, blood: 5, notes:"", updated:"2025-11-24 11:00" },
+        { id: 23, name: "Ashakiran Hospital Bagalkot", phone: "9902567890", address: "Station Road", beds: 15, icu: 3, oxygen: 8, blood: 5, notes:"", updated:"2025-11-23 18:00" },
+        { id: 24, name: "Shri Hospital Bagalkot", phone: "9012578901", address: "Gandhi Circle", beds: 18, icu: 4, oxygen: 9, blood: 5, notes:"", updated:"2025-11-23 14:00" },
+        { id: 25, name: "Narayana Hospital Bagalkot", phone: "8123459012", address: "Ilkal Road", beds: 10, icu: 2, oxygen: 6, blood: 5, notes:"", updated:"2025-11-22 15:00" },
+        { id: 26, name: "Vatsalya Hospital Bagalkot", phone: "8974567890", address: "Jamkhandi Road", beds: 14, icu: 2, oxygen: 7, blood: 5, notes:"", updated:"2025-11-22 13:00" },
+        { id: 27, name: "Unity Care Hospital Bagalkot", phone: "9090909090", address: "Market Road", beds: 12, icu: 1, oxygen: 5, blood: 5, notes:"", updated:"2025-11-21 10:00" },
+        { id: 28, name: "City Hospital Bagalkot", phone: "9988776655", address: "Aminagad Road", beds: 16, icu: 3, oxygen: 9, blood: 5, notes:"", updated:"2025-11-21 16:00" },
+        { id: 29, name: "Sanjeevini Hospital Bagalkot", phone: "8334221100", address: "Vidyanagar", beds: 13, icu: 2, oxygen: 7, blood: 5, notes:"", updated:"2025-11-20 11:00" },
+        { id: 30, name: "Ganga Hospital Bagalkot", phone: "7902345678", address: "Extension Area", beds: 11, icu: 1, oxygen: 6, blood: 5, notes:"", updated:"2025-11-20 12:00" },
+        { id: 31, name: "Navjeevan Hospital Bagalkot", phone: "9123405678", address: "Navanagar", beds: 17, icu: 3, oxygen: 10, blood: 5, notes:"", updated:"2025-11-19 10:30" },
+        { id: 32, name: "Meenakshi Hospital Bagalkot", phone: "9901188822", address: "Station Road", beds: 10, icu: 1, oxygen: 5, blood: 5, notes:"", updated:"2025-11-19 13:00" },
+        { id: 33, name: "Lotus Hospital Bagalkot", phone: "9874561230", address: "Ilkal Road", beds: 13, icu: 2, oxygen: 7, blood: 5, notes:"", updated:"2025-11-18 11:00" },
+        { id: 34, name: "Ashwini Hospital Bagalkot", phone: "9988774433", address: "Market Road", beds: 19, icu: 3, oxygen: 11, blood: 5, notes:"", updated:"2025-11-18 15:00" },
+        { id: 35, name: "Golden Hospital Bagalkot", phone: "9995551110", address: "Gulbarga Road", beds: 14, icu: 2, oxygen: 8, blood: 5, notes:"", updated:"2025-11-17 12:00" },
 
-// ---------------------
-// RENDER TABLE
-// ---------------------
+        // ------------- BANGALORE (15 Hospitals) -------------
+        { id: 36, name: "Manipal Hospital Bangalore", phone: "080-25024000", address: "Old Airport Road", beds: 40, icu: 10, oxygen: 20, blood: 5, notes:"", updated:"2025-11-24 10:00" },
+        { id: 37, name: "Fortis Hospital Bangalore", phone: "080-66214444", address: "Bannerghatta Road", beds: 35, icu: 8, oxygen: 18, blood: 5, notes:"", updated:"2025-11-24 09:00" },
+        { id: 38, name: "Apollo Hospital Bangalore", phone: "080-46686333", address: "Jayanagar", beds: 30, icu: 7, oxygen: 15, blood: 5, notes:"", updated:"2025-11-23 14:00" },
+        { id: 39, name: "St. John's Hospital Bangalore", phone: "080-49466000", address: "Koramangala", beds: 22, icu: 5, oxygen: 12, blood: 5, notes:"", updated:"2025-11-23 12:00" },
+        { id: 40, name: "Columbia Asia Hospital Bangalore", phone: "080-61656666", address: "Yeshwanthpur", beds: 28, icu: 6, oxygen: 13, blood: 5, notes:"", updated:"2025-11-22 10:00" },
+        { id: 41, name: "Aster CMI Hospital Bangalore", phone: "080-43420100", address: "Hebbal", beds: 32, icu: 8, oxygen: 14, blood: 5, notes:"", updated:"2025-11-22 16:00" },
+        { id: 42, name: "Narayana Health Bangalore", phone: "080-71222222", address: "Bommasandra", beds: 50, icu: 12, oxygen: 20, blood: 5, notes:"", updated:"2025-11-21 11:00" },
+        { id: 43, name: "BGS Global Hospital Bangalore", phone: "080-26255555", address: "Kengeri", beds: 27, icu: 5, oxygen: 11, blood: 5, notes:"", updated:"2025-11-21 12:00" },
+        { id: 44, name: "Sakra World Hospital Bangalore", phone: "080-49694969", address: "Marathahalli", beds: 26, icu: 5, oxygen: 10, blood: 5, notes:"", updated:"2025-11-20 15:00" },
+        { id: 45, name: "Ramaiah Hospital Bangalore", phone: "080-40503400", address: "New BEL Road", beds: 24, icu: 4, oxygen: 9, blood: 5, notes:"", updated:"2025-11-20 14:00" },
+        { id: 46, name: "Vydehi Hospital Bangalore", phone: "080-49069000", address: "Whitefield", beds: 29, icu: 6, oxygen: 12, blood: 5, notes:"", updated:"2025-11-19 10:00" },
+        { id: 47, name: "Hosmat Hospital Bangalore", phone: "080-25593796", address: "Magarath Road", beds: 20, icu: 4, oxygen: 8, blood: 5, notes:"", updated:"2025-11-19 11:00" },
+        { id: 48, name: "KIMS Hospital Bangalore", phone: "080-26712791", address: "VV Puram", beds: 21, icu: 4, oxygen: 8, blood: 5, notes:"", updated:"2025-11-18 10:00" },
+        { id: 49, name: "ESI Hospital Bangalore", phone: "080-26742600", address: "Rajajinagar", beds: 18, icu: 3, oxygen: 7, blood: 5, notes:"", updated:"2025-11-18 09:00" },
+        { id: 50, name: "Bowring Hospital Bangalore", phone: "080-25591300", address: "Shivajinagar", beds: 23, icu: 4, oxygen: 9, blood: 5, notes:"", updated:"2025-11-17 12:00" }
+
+    // 👉 You can add 100 more hospitals here
+];
+
+// ------------------------------------------
+// RENDER HOSPITAL TABLE
+// ------------------------------------------
 function renderHospitals(list = hospitals) {
     const tbody = document.getElementById("hospitalList");
     tbody.innerHTML = "";
 
     list.forEach(h => {
         const row = document.createElement("tr");
-
         row.innerHTML = `
             <td><b>${h.name}</b></td>
-
             <td>
-                ${h.phone}<br>${h.address}
-                <br>
+                ${h.phone}<br>${h.address}<br>
+
                 <button class="icon-btn" onclick="callHospital('${h.phone}')">
                     <svg class="icon"><use href="#phoneIcon"></use></svg>
                 </button>
+
                 <button class="icon-btn" onclick="smsHospital('${h.phone}')">
                     <svg class="icon"><use href="#smsIcon"></use></svg>
                 </button>
+
                 <button class="icon-btn" onclick="openLocation('${h.address}')">
                     <svg class="icon"><use href="#locationIcon"></use></svg>
                 </button>
-                <button class="icon-btn" onclick="alertInfo('${h.name}')">
+
+                <button class="icon-btn" onclick="alertHospital('${h.name}')">
                     <svg class="icon"><use href="#alertIcon"></use></svg>
+                </button>
+
+                <button class="icon-btn" onclick="ambulanceHospital('${h.phone}')">
+                    <svg class="icon"><use href="#ambulanceIcon"></use></svg>
                 </button>
             </td>
 
             <td>${h.beds} / ${h.icu}</td>
             <td>${h.oxygen} LPM</td>
+            <td>${h.blood} units</td>
             <td>${h.updated}</td>
 
-            <td class="actions">
+            <td>
                 <button class="btn-small" onclick="editHospital('${h.id}')">Edit</button>
                 <button class="btn-small" onclick="deleteHospital('${h.id}')">Delete</button>
             </td>
         `;
-
         tbody.appendChild(row);
     });
 }
 
 renderHospitals();
 
+// ------------------------------------------
+// ICON ACTIONS
+// ------------------------------------------
+function callHospital(n) { window.location.href = `tel:${n}`; }
+function smsHospital(n) { window.location.href = `sms:${n}`; }
+function openLocation(a) { window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(a)}`); }
+function alertHospital(name) { alert(`⚠️ Emergency alert sent for ${name}!`); }
+function ambulanceHospital(phone) { window.location.href = `tel:${phone}`; }
 
-// ----------------------
-// ICON BUTTON FUNCTIONS
-// ----------------------
-function callHospital(num) {
-    window.location.href = `tel:${num}`;
-}
-
-function smsHospital(num) {
-    window.location.href = `sms:${num}`;
-}
-
-function openLocation(addr) {
-    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`);
-}
-
-function alertInfo(name) {
-    alert("Emergency Alert for: " + name);
-}
-
-
-
-// ----------------------
-// ADD / EDIT / SAVE
-// ----------------------
+// ------------------------------------------
+// EDIT + DELETE (In-memory only)
+// ------------------------------------------
 let editId = null;
-
-document.getElementById("saveBtn").onclick = function () {
-    const data = {
-        name: name.value,
-        phone: phone.value,
-        address: address.value,
-        beds: beds.value,
-        icu: icu.value,
-        oxygen: oxygen.value,
-        notes: notes.value,
-        updated: new Date().toISOString().slice(0, 16).replace("T", " ")
-    };
-
-    if (editId) {
-        const i = hospitals.findIndex(h => h.id === editId);
-        hospitals[i] = { ...hospitals[i], ...data };
-        editId = null;
-    } else {
-        data.id = Date.now().toString();
-        hospitals.push(data);
-    }
-
-    localStorage.setItem("hospitals", JSON.stringify(hospitals));
-    renderHospitals();
-    clearForm();
-};
 
 function editHospital(id) {
     const h = hospitals.find(x => x.id == id);
-    editId = id;
+    if (!h) return;
 
-    name.value = h.name;
-    phone.value = h.phone;
-    address.value = h.address;
-    beds.value = h.beds;
-    icu.value = h.icu;
-    oxygen.value = h.oxygen;
-    notes.value = h.notes;
+    document.getElementById("name").value = h.name;
+    document.getElementById("phone").value = h.phone;
+    document.getElementById("address").value = h.address;
+    document.getElementById("beds").value = h.beds;
+    document.getElementById("icu").value = h.icu;
+    document.getElementById("oxygen").value = h.oxygen;
+    document.getElementById("blood").value = h.blood;
+    document.getElementById("notes").value = h.notes;
+
+    editId = id;
 }
 
 function deleteHospital(id) {
     hospitals = hospitals.filter(h => h.id != id);
-    localStorage.setItem("hospitals", JSON.stringify(hospitals));
     renderHospitals();
 }
 
-document.getElementById("clearBtn").onclick = clearForm;
+// ------------------------------------------
+// SAVE BUTTON
+// ------------------------------------------
+document.getElementById("saveBtn").onclick = () => {
+    const data = {
+        name: document.getElementById("name").value,
+        phone: document.getElementById("phone").value,
+        address: document.getElementById("address").value,
+        beds: parseInt(document.getElementById("beds").value),
+        icu: parseInt(document.getElementById("icu").value),
+        oxygen: parseInt(document.getElementById("oxygen").value),
+        blood: parseInt(document.getElementById("blood").value),
+        notes: document.getElementById("notes").value,
+        updated: new Date().toLocaleString(),
+    };
 
-function clearForm() {
-    name.value = "";
-    phone.value = "";
-    address.value = "";
-    beds.value = "";
-    icu.value = "";
-    oxygen.value = "";
-    notes.value = "";
-    editId = null;
-}
+    if (editId) {
+        const i = hospitals.findIndex(h => h.id == editId);
+        hospitals[i] = { ...hospitals[i], ...data };
+        editId = null;
+    } else {
+        data.id = Date.now();
+        hospitals.push(data);
+    }
 
+    renderHospitals();
+};
 
-// ----------------------
-// SEARCH FILTER
-// ----------------------
-document.getElementById("search").addEventListener("input", function () {
-    const q = this.value.toLowerCase();
-    const filtered = hospitals.filter(h =>
-        h.name.toLowerCase().includes(q) ||
-        h.address.toLowerCase().includes(q)
-    );
-    renderHospitals(filtered);
-});
 </script>
-
-</body>
-</html>
-
