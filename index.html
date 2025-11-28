@@ -170,28 +170,25 @@ function renderHospitals(list = hospitals) {
             <td>
                 ${h.phone}<br>${h.address}<br>
 
-               
-				// <button class="icon-btn" onclick="callHospital('${h.phone}')">
-				//     <svg class="icon"><use href="#phoneIcon"></use></svg> Phone
-				// </button>
 				<button class="icon-btn" onclick="callHospital('${h.phone}')">
 			        📞 Phone
 			    </button>
 
                 <button class="icon-btn" onclick="smsHospital('${h.phone}')">
-                    <svg class="icon"><use href="#smsIcon"></use></svg>
-                </button>
-
-                <button class="icon-btn" onclick="openLocation('${h.address}')">
-                    <svg class="icon"><use href="#locationIcon"></use></svg>
-                </button>
-
-                <button class="icon-btn" onclick="alertHospital('${h.name}')">
-                    <svg class="icon"><use href="#alertIcon"></use></svg>
-                </button>
-                <button class="icon-btn" onclick="window.location.href='tel:108'">
-    		        <svg class="icon"><use href="#ambulanceIcon"></use></svg>
-		        </button>
+			        ✉ SMS
+			    </button>
+			
+			    <button class="icon-btn" onclick="openLocation('${h.address}')">
+			        📍 Location
+			    </button>
+			
+			    <button class="icon-btn" onclick="alertHospital('${h.name}')">
+			        ⚠ Alert
+			    </button>
+			
+			    <button class="icon-btn" onclick="window.location.href='tel:108'">
+			        🚑 Ambulance
+			    </button>
             </td>
 
             <td>${h.beds} / ${h.icu}</td>
@@ -287,6 +284,7 @@ document.getElementById("search").addEventListener("input", function () {
 });
 
 </script>
+
 
 
 
