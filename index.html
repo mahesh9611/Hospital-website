@@ -15,6 +15,21 @@
     .icon { width: 22px; height: 22px; vertical-align: middle; }
     .search-box { width: 40%; padding: 10px; }
     .form-container { background: white; padding: 15px; border-radius: 5px; }
+	.icon-btn {
+    background: #e7f3ff;
+    border: 1px solid #b5d4ff;
+    padding: 6px 12px;
+    margin: 4px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.icon-btn:hover {
+    background: #d3e8ff;
+}
 </style>
 </head>
 <body>
@@ -155,12 +170,13 @@ function renderHospitals(list = hospitals) {
             <td>
                 ${h.phone}<br>${h.address}<br>
 
-                // <button class="icon-btn" onclick="callHospital('${h.phone}')">
-                //     <svg class="icon"><use href="#phoneIcon"></use></svg>
-                // </button>
+               
+				// <button class="icon-btn" onclick="callHospital('${h.phone}')">
+				//     <svg class="icon"><use href="#phoneIcon"></use></svg> Phone
+				// </button>
 				<button class="icon-btn" onclick="callHospital('${h.phone}')">
-				    <svg class="icon"><use href="#phoneIcon"></use></svg> Phone
-				</button>
+			        📞 Phone
+			    </button>
 
                 <button class="icon-btn" onclick="smsHospital('${h.phone}')">
                     <svg class="icon"><use href="#smsIcon"></use></svg>
@@ -271,6 +287,7 @@ document.getElementById("search").addEventListener("input", function () {
 });
 
 </script>
+
 
 
 
