@@ -159,8 +159,8 @@ function renderHospitals(list = hospitals) {
                 //     <svg class="icon"><use href="#phoneIcon"></use></svg>
                 // </button>
 				<button class="icon-btn" onclick="callHospital('${h.phone}')">
-        			<svg class="icon"><use href="#phoneIcon"></use></svg>
-    			</button>
+				    <svg class="icon"><use href="#phoneIcon"></use></svg> Phone
+				</button>
 
                 <button class="icon-btn" onclick="smsHospital('${h.phone}')">
                     <svg class="icon"><use href="#smsIcon"></use></svg>
@@ -271,6 +271,7 @@ document.getElementById("search").addEventListener("input", function () {
 });
 
 </script>
+
 
 
 
